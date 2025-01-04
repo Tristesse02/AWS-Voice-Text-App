@@ -5,7 +5,7 @@ codeuri = "C:\\Users\\vtmin\\OneDrive\\Documents\\AWS_test\\VoiceTextApp"
 runtime = "nodejs20.x"
 architecture = "x86_64"
 handler = "src/handlers/connect.handler"
-manifest_hash = "1b7caca40b86bbfd804122a2f0d9ead5"
+manifest_hash = "29211ccef6448e8b01b8a58d88e6186c"
 packagetype = "Zip"
 functions = ["ConnectFunction", "DisconnectFunction", "DefaultFunction"]
 

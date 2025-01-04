@@ -1,0 +1,7 @@
+{
+  "body": "{\"action\":\"sendMessage\",\"data\":\"Hello, WebSocket!\"}",
+  "requestContext": {
+    "routeKey": "$default",
+    "connectionId": "test-connection-id"
+  }
+}
