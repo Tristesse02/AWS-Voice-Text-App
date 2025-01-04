@@ -1,6 +1,6 @@
 {
-    "name": "replaced-by-user-input",
-    "description": "replaced-by-user-input",
+    "name": "voice-text-app",
+    "description": "An app that convert speech to text",
     "version": "0.0.1",
     "private": true,
     "devDependencies": {
