@@ -1,0 +1,9 @@
+{
+  "requestContext": {
+    "eventType": "DISCONNECT",
+    "connectionId": "abc123",
+    "domainName": "example.com",
+    "stage": "dev"
+  },
+  "isBase64Encoded": false
+}

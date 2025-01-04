@@ -1,0 +1,12 @@
+{
+  "requestContext": {
+    "eventType": "CONNECT",
+    "connectionId": "abc123",
+    "domainName": "example.com",
+    "stage": "dev"
+  },
+  "headers": {
+    "Host": "example.com"
+  },
+  "isBase64Encoded": false
+}

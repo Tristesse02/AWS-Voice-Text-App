@@ -1,0 +1,107 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: VoiceTextApp - WebSocket API Application
+Transform:
+- AWS::Serverless-2016-10-31
+Resources:
+  WebSocketApi:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name: VoiceTextAppWebSocketApi
+      ProtocolType: WEBSOCKET
+      RouteSelectionExpression: $request.body.action
+  WebSocketApiDeployment:
+    Type: AWS::ApiGatewayV2::Deployment
+    Properties:
+      ApiId:
+        Ref: WebSocketApi
+    DependsOn:
+    - WebSocketRouteConnect
+    - WebSocketRouteDisconnect
+    - WebSocketRouteDefault
+  WebSocketApiStage:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      ApiId:
+        Ref: WebSocketApi
+      DeploymentId:
+        Ref: WebSocketApiDeployment
+      StageName: dev
+  WebSocketRouteConnect:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: WebSocketApi
+      RouteKey: $connect
+      Target:
+        Fn::Sub: integrations/${WebSocketIntegrationConnect}
+  WebSocketRouteDisconnect:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: WebSocketApi
+      RouteKey: $disconnect
+      Target:
+        Fn::Sub: integrations/${WebSocketIntegrationDisconnect}
+  WebSocketRouteDefault:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId:
+        Ref: WebSocketApi
+      RouteKey: $default
+      Target:
+        Fn::Sub: integrations/${WebSocketIntegrationDefault}
+  WebSocketIntegrationConnect:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId:
+        Ref: WebSocketApi
+      IntegrationType: AWS_PROXY
+      IntegrationUri:
+        Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${ConnectFunction.Arn}/invocations
+  WebSocketIntegrationDisconnect:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId:
+        Ref: WebSocketApi
+      IntegrationType: AWS_PROXY
+      IntegrationUri:
+        Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${DisconnectFunction.Arn}/invocations
+  WebSocketIntegrationDefault:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId:
+        Ref: WebSocketApi
+      IntegrationType: AWS_PROXY
+      IntegrationUri:
+        Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${DefaultFunction.Arn}/invocations
+  ConnectFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/connect.handler
+      Runtime: nodejs20.x
+      CodeUri: ConnectFunction
+    Metadata:
+      SamResourceId: ConnectFunction
+  DisconnectFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/disconnect.handler
+      Runtime: nodejs20.x
+      CodeUri: DisconnectFunction
+    Metadata:
+      SamResourceId: DisconnectFunction
+  DefaultFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/default.handler
+      Runtime: nodejs20.x
+      CodeUri: DefaultFunction
+    Metadata:
+      SamResourceId: DefaultFunction
+Globals:
+  Function:
+    Tracing: Active
+    LoggingConfig:
+      LogFormat: JSON
+  Api:
+    TracingEnabled: true

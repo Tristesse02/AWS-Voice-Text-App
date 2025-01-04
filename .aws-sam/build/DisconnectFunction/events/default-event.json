@@ -1,0 +1,10 @@
+{
+  "requestContext": {
+    "eventType": "MESSAGE",
+    "connectionId": "abc123",
+    "domainName": "example.com",
+    "stage": "dev"
+  },
+  "body": "{\"action\":\"sendMessage\",\"data\":\"Hello, WebSocket!\"}",
+  "isBase64Encoded": false
+}
