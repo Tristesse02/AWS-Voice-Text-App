@@ -1,41 +1,3 @@
-// export const handler = async (event) => {
-//   const { requestContext, body } = event;
-//   const { connectionId, routeKey } = requestContext;
-
-//   if (routeKey === "sendMessage") {
-//     const responseMessage = JSON.stringify({
-//       message: `Echo: ${JSON.parse(body).data}`,
-//     });
-
-//     // Call the API Gateway to send the message back to the client
-//     const apiGatewayManagementApi = new AWS.ApiGatewayManagementApi({
-//       endpoint: `${requestContext.domainName}/${requestContext.stage}`,
-//     });
-
-//     try {
-//       await apiGatewayManagementApi
-//         .postToConnection({ ConnectionId: connectionId, Data: responseMessage })
-//         .promise();
-//       return { statusCode: 200, body: "Message sent." };
-//     } catch (error) {
-//       console.error("Error sending message:", error);
-//       return { statusCode: 500, body: "Failed to send message." };
-//     }
-//   }
-
-//   return { statusCode: 400, body: "Unknown action" };
-// };
-
-// export const handler = async (event) => {
-//   console.log("### Default route triggered ###");
-//   console.log("Event received:", JSON.stringify(event, null, 2));
-
-//   return {
-//     statusCode: 200,
-//     body: JSON.stringify({ message: "Default route executed" }),
-//   };
-// };
-
 import AWS from "aws-sdk";
 
 const ApiGatewayManagementApi = AWS.ApiGatewayManagementApi;
@@ -49,15 +11,24 @@ export const handler = async (event) => {
   const client = new ApiGatewayManagementApi({ endpoint });
 
   try {
-    const body = JSON.parse(event.body);
-    console.log("Parsed body:", body);
+    let rawAudioData;
+
+    if (event.isBase64Encoded) {
+      console.log("Data is base64 encoded. Decoding...");
+      rawAudioData = Buffer.from(event.body, "base64"); // Decode Base64
+    } else {
+      console.log("Minhdz");
+      rawAudioData = Buffer.from(event.body, "utf8"); // Handle text/JSON
+    }
+
+    console.log("Received data:", rawAudioData);
 
     await client
       .postToConnection({
         ConnectionId: connectionId,
         Data: JSON.stringify({
           message: "Message received successfully!",
-          receivedData: body,
+          receivedData: rawAudioData,
         }),
       })
       .promise();
