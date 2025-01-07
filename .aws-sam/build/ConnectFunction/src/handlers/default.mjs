@@ -1,4 +1,8 @@
 import AWS from "aws-sdk";
+import fs from "fs";
+import path from "path";
+import { transcribeAudio } from "./transcribe.mjs";
+import { fileTypeFromBuffer } from "file-type";
 
 const ApiGatewayManagementApi = AWS.ApiGatewayManagementApi;
 
@@ -21,26 +25,46 @@ export const handler = async (event) => {
       rawAudioData = Buffer.from(event.body, "utf8"); // Handle text/JSON
     }
 
-    console.log("Received data:", rawAudioData);
+    const detectedType = await fileTypeFromBuffer(rawAudioData);
+    console.log("Detected file type:", detectedType);
+
+    const tempFilePath = `/tmp/audio-${Date.now()}.webm`;
+    fs.writeFileSync(tempFilePath, rawAudioData);
+    console.log("Saved audio data to: ", tempFilePath);
+
+    // Transcribe the audio
+    const transcription = await transcribeAudio(tempFilePath);
 
     await client
       .postToConnection({
         ConnectionId: connectionId,
         Data: JSON.stringify({
-          message: "Message received successfully!",
-          receivedData: rawAudioData,
+          message: "Transcription completed!",
+          transcription,
         }),
       })
       .promise();
 
+    console.log("Sent transcription to client");
+
     return {
       statusCode: 200,
       body: JSON.stringify({
-        message: "Message sent successfully!",
+        message: "Transcription handled successfully!",
       }),
     };
   } catch (error) {
     console.error("Error:", error);
+
+    await client
+      .postToConnection({
+        ConnectionId: connectionId,
+        Data: JSON.stringify({
+          message: "Failed to transcribe audio",
+          error: error.message,
+        }),
+      })
+      .promise();
 
     return {
       statusCode: 500,

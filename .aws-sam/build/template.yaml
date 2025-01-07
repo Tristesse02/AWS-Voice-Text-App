@@ -96,6 +96,7 @@ Resources:
       Handler: src/handlers/default.handler
       Runtime: nodejs20.x
       CodeUri: DefaultFunction
+      Timeout: 60
     Metadata:
       SamResourceId: DefaultFunction
   ConfigLambdaPermission:

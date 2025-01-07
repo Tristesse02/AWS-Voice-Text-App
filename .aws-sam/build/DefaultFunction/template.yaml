@@ -90,6 +90,7 @@ Resources:
       Handler: src/handlers/default.handler
       Runtime: nodejs20.x
       CodeUri: .
+      Timeout: 60
 
   ConfigLambdaPermission:
     Type: AWS::Lambda::Permission
